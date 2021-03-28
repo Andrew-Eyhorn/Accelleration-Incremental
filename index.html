@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceleration</title>
+</head>
+<body>
+    <p id = "currencyVisual">0 currency</p>
+    <p id = "speedVisual">1 mm/s</p>
+    <p id = "energyVisual">0 miliJoules of energy</p>
+    <p id = "energyProductionVisual">0 mJ/s</p>
+    <button onclick="giveCurrency()">give currency</button>
+    <button onclick="buyBuilding(gameData.CR2032, 'CR2032 Button Battery')" id = "CR2032 Button Battery">Buy a CR2032 Button Battery for 50 currency</button>
+    <button onclick="increaseSpeed()" id = "increaseSpeed">Increase your speed by 1mm/s for 3 miliJoules of energy</button>
+    <script src="main.js" charset="utf-8" type="text/javascript"></script>
+    <!--uncomment below code once reset all data is implemented
+        <body onload="loadSaveGame()"></body>
+    -->
+</body>
+</html>
