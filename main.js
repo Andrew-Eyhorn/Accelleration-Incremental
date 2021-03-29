@@ -1,3 +1,17 @@
+function generateAchievements() {
+    achievementArray = []
+    for (i = 0; i < 10; i++) {
+        achievementArray.push(false);
+        var achievementBox = document.createElement("rect")
+        achievementBox.style.border = "1px solid black"
+        achievementBox.style.height = "50px"
+        achievementBox.style.width = "50px"
+        achievementBox.style.display = "inline-block"
+        achievementBox.style.margin = "5px"
+        document.getElementById("achievementsMenu").appendChild(achievementBox)
+    }
+    return achievementArray
+}
 var gameData = {
     currency: 0,
     currencyPerClick: 1,
@@ -8,6 +22,7 @@ var gameData = {
     CR2032: {price: 50, amountOwned: 0, production: 0.001},
     unit: 0.001,
     lastTick: Date.now(),
+    achievements: generateAchievements(),
 };
 function loadSaveGame() {
     var savegame = JSON.parse(localStorage.getItem("saveGame"))
@@ -53,6 +68,14 @@ function increaseSpeed() {
         document.getElementById("speedVisual").innerHTML = Math.floor(gameData.speed*1000) + " mm/s"
     }
 }
+function navigate(menu) {
+    x = document.getElementsByClassName("menu")
+    for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none"
+    }
+    x[menu].style.display = "inline-block"
+}
+navigate(0)
 var mainGameLoop = window.setInterval(function() {
     increaseSpeed();
     gameData.currency += gameData.speed*1000
