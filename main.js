@@ -6,7 +6,7 @@ function generateAchievements() {
     return achievementArray
 }
 var gameData = {
-    currency: 0,
+    currency: 1000,
     currencyPerClick: 1,
     speed: 0.001,
     energy: 0,
@@ -19,7 +19,7 @@ var gameData = {
     unit: 0.001,
     lastTick: Date.now(),
     achievements: generateAchievements(),
-    settings: {tickSpeed: 1000,},
+    settings: {tickSpeed: 100,},
 };  
 function loadSaveGame() {
     var savegame = JSON.parse(localStorage.getItem("saveGame"))
@@ -77,13 +77,31 @@ function navigate(menu) {
     x[menu].style.display = "inline-block"
 }
 navigate(0)
-var mainGameLoop = window.setInterval(function() {
+var mainGameLoop = null
+function gameCalcluations() {
+    mainGameLoop = window.setInterval(function() {
     increaseSpeed();
-    gameData.currency += gameData.speed*1000
-    gameData.energy += totalEnergyProduction()
+    gameData.currency += gameData.speed*1000 / (1000/gameData.settings.tickSpeed)
+    gameData.energy += totalEnergyProduction() / (1000/gameData.settings.tickSpeed)
     document.getElementById("currencyVisual").innerHTML = Math.floor(gameData.currency) + " Currency"
     document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy*(1/gameData.unit)) + " miliJoules of energy"
-}, 1000)
+}, gameData.settings.tickSpeed)
+}
+function stopGameCalculations() {
+    clearInterval(mainGameLoop)
+}
+gameCalcluations()
+//code for tickSpeedSlider option
+var tickSpeedSliderValues = [50, 100, 125, 250, 500, 1000]
+var slider = document.getElementById("tickSpeedSlider");
+var sliderOutput = document.getElementById("tickSpeedSliderOutput")
+sliderOutput.innerHTML = tickSpeedSliderValues[slider.value]
+slider.oninput = function() {
+    sliderOutput.innerHTML = tickSpeedSliderValues[slider.value]
+    gameData.settings.tickSpeed = tickSpeedSliderValues[slider.value]
+    stopGameCalculations()
+    gameCalcluations()
+}
 //uncomment below code once reset all data is implemented
 /*var saveGameLoop = window.setInterval(function() { 
     gameData.lastTick = Date.now() 
