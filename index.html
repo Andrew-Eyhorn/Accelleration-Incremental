@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceleration-Incremental</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id = "currenciesDisplay">
@@ -24,10 +25,22 @@
         <button onclick="increaseSpeed()" id = "increaseSpeed">Increase your speed by 1mm/s for 3 miliJoules of energy</button>
     </div>
     <div id = "energyMenu" class = "menu">
-        <button onclick="buyBuilding(gameData.CR2032, 'CR2032 Button Battery')" id = "CR2032 Button Battery">Buy a CR2032 Button Battery for 50 currency</button>
+        <div class = "energyBuildings">
+            <button onclick="buyBuilding(gameData.buildings.B0, 'B0', 'CR2032 Button Battery')" id = "B0">Buy a CR2032 Button Battery for 50 currency</button>
+            <button onclick="buyBuilding(gameData.buildings.B1, 'B1', 'CR4250 Button Battery')" id = "B1">Buy a CR4250 Button Battery for 500 currency</button>
+        </div>
     </div>
     <div id = "achievementsMenu" class = "menu">
-        <p>test</p>
+        <rect class = "achievement" id = "A0">???</rect>
+        <rect class = "achievement" id = "A1">???</rect>
+        <rect class = "achievement" id = "A2">???</rect>
+        <rect class = "achievement" id = "A3">???</rect>
+        <rect class = "achievement" id = "A4">???</rect>
+        <rect class = "achievement" id = "A5">???</rect>
+        <rect class = "achievement" id = "A6">???</rect>
+        <rect class = "achievement" id = "A7">???</rect>
+        <rect class = "achievement" id = "A8">???</rect>
+        <rect class = "achievement" id = "A9">???</rect>
     </div>
     <div id = "optionsMenu" class = "menu">
         <p>test 2</p>

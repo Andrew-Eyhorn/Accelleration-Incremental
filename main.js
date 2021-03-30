@@ -2,13 +2,6 @@ function generateAchievements() {
     achievementArray = []
     for (i = 0; i < 10; i++) {
         achievementArray.push(false);
-        var achievementBox = document.createElement("rect")
-        achievementBox.style.border = "1px solid black"
-        achievementBox.style.height = "50px"
-        achievementBox.style.width = "50px"
-        achievementBox.style.display = "inline-block"
-        achievementBox.style.margin = "5px"
-        document.getElementById("achievementsMenu").appendChild(achievementBox)
     }
     return achievementArray
 }
@@ -19,11 +12,15 @@ var gameData = {
     energy: 0,
     energyProduction: 0,
     mass: 2000000000,
-    CR2032: {price: 50, amountOwned: 0, production: 0.001},
+    buildings: {
+        B0: {price: 50, amountOwned: 0, production: 0.001},
+        B1: {price: 500, amountOwned: 0, production: 0.01}
+            }, 
     unit: 0.001,
     lastTick: Date.now(),
     achievements: generateAchievements(),
-};
+    settings: {tickSpeed: 1000,},
+};  
 function loadSaveGame() {
     var savegame = JSON.parse(localStorage.getItem("saveGame"))
     if (savegame !== null) {
@@ -39,21 +36,25 @@ function calculateOfflineProgress() {
     gameData.energy += totalEnergyProduction() * (diff/1000)
     document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy*1000) + " miliJoules of energy"
 }
-function totalEnergyProduction() { //this will need to account for any number of buildings preferably
-    return gameData.CR2032.amountOwned*gameData.CR2032.production
+function totalEnergyProduction() { 
+    totalOutput = 0
+    for (i in gameData.buildings) {
+        totalOutput += gameData.buildings[i].amountOwned * gameData.buildings[i].production
+    }
+    return totalOutput
 }
 function giveCurrency() {
     gameData.currency += gameData.currencyPerClick
     document.getElementById("currencyVisual").innerHTML = gameData.currency + " Currency"
 };
-function buyBuilding(building, name){
+function buyBuilding(building, id, name){
     if (gameData.currency >= building.price) {
         gameData.currency -= building.price
         building.amountOwned += 1
         building.price = Math.ceil(building.price*1.2)
-        document.getElementById(name).innerHTML = "Buy a " + name + " for " + building.price  + " currency"
+        document.getElementById(id).innerHTML = "Buy a " + name + " for " + building.price  + " currency"
         document.getElementById("currencyVisual").innerHTML = Math.floor(gameData.currency) + " Currency"
-        document.getElementById("energyProductionVisual").innerHTML = Math.floor(gameData.CR2032.amountOwned*gameData.CR2032.production*1000) + " mJ/s"
+        document.getElementById("energyProductionVisual").innerHTML = Math.floor(totalEnergyProduction()*1000) + " mJ/s"
     }
     
 }
@@ -64,8 +65,8 @@ function increaseSpeed() {
         gameData.speed += gameData.unit
         energyNeeded = Math.round(gameData.mass/2000*(gameData.unit**2 + 2*gameData.unit*gameData.speed))/1000
         document.getElementById("increaseSpeed").innerHTML = "Increase your speed by 1mm/s for " + energyNeeded*1000 + " miliJoules of energy"
-        document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy*1000) + " miliJoules of energy"
-        document.getElementById("speedVisual").innerHTML = Math.floor(gameData.speed*1000) + " mm/s"
+        document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy*(1/gameData.unit)) + " miliJoules of energy"
+        document.getElementById("speedVisual").innerHTML = Math.floor(gameData.speed*(1/gameData.unit)) + " mm/s"
     }
 }
 function navigate(menu) {
@@ -81,7 +82,7 @@ var mainGameLoop = window.setInterval(function() {
     gameData.currency += gameData.speed*1000
     gameData.energy += totalEnergyProduction()
     document.getElementById("currencyVisual").innerHTML = Math.floor(gameData.currency) + " Currency"
-    document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy*1000) + " miliJoules of energy"
+    document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy*(1/gameData.unit)) + " miliJoules of energy"
 }, 1000)
 //uncomment below code once reset all data is implemented
 /*var saveGameLoop = window.setInterval(function() { 
