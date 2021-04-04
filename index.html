@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,48 +8,55 @@
     <title>Acceleration-Incremental</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <div id = "currenciesDisplay">
-        <p id = "currencyVisual">0 currency</p>
-        <p id = "speedVisual">1 mm/s</p>
-        <p id = "energyVisual">0 miliJoules of energy</p>
-        <p id = "energyProductionVisual">0 mJ/s</p>
+    <div id="currenciesDisplay">
+        <p id="currencyVisual">0 currency</p>
+        <p id="speedVisual">1 mm/s</p>
+        <p id="energyVisual">0 miliJoules of energy</p>
+        <p id="energyProductionVisual">0 mJ/s</p>
     </div>
-    <div id = "navigationButtons">
+    <div id="navigationButtons">
         <button onclick="navigate(0)">Speed</button>
         <button onclick="navigate(1)">Energy</button>
         <button onclick="navigate(2)">Achievements</button>
         <button onclick="navigate(3)">Options</button>
     </div>
-    <div id = "speedMenu" class = "menu">
+    <div id="speedMenu" class="menu">
         <button onclick="giveCurrency()">give currency</button>
-        <button onclick="increaseSpeed()" id = "increaseSpeed">Increase your speed by 1mm/s for 3 miliJoules of energy</button>
+        <button onclick="increaseSpeed()" id="increaseSpeed">Increase your speed by 1mm/s for 3 miliJoules of
+            energy</button>
     </div>
-    <div id = "energyMenu" class = "menu">
-        <div class = "energyBuildings">
-            <button onclick="buyBuilding(gameData.buildings.B0, 'B0', 'CR2032 Button Battery')" id = "B0">Buy a CR2032 Button Battery for 50 currency</button>
-            <button onclick="buyBuilding(gameData.buildings.B1, 'B1', 'CR4250 Button Battery')" id = "B1">Buy a CR4250 Button Battery for 500 currency</button>
+    <div id="energyMenu" class="menu">
+        <div class="energyBuildings">
+            <button onclick="buyBuilding(gameData.buildings.B0, 'B0', 'CR2032 Button Battery')" id="B0">Buy a CR2032
+                Button Battery for 50 currency</button>
+            <button onclick="buyBuilding(gameData.buildings.B1, 'B1', 'CR4250 Button Battery')" id="B1">Buy a CR4250
+                Button Battery for 500 currency</button>
         </div>
     </div>
-    <div id = "achievementsMenu" class = "menu">
-        <rect class = "achievement" id = "A0">???</rect>
-        <rect class = "achievement" id = "A1">???</rect>
-        <rect class = "achievement" id = "A2">???</rect>
-        <rect class = "achievement" id = "A3">???</rect>
-        <rect class = "achievement" id = "A4">???</rect>
-        <rect class = "achievement" id = "A5">???</rect>
-        <rect class = "achievement" id = "A6">???</rect>
-        <rect class = "achievement" id = "A7">???</rect>
-        <rect class = "achievement" id = "A8">???</rect>
-        <rect class = "achievement" id = "A9">???</rect>
+    <div id="achievementsMenu" class="menu">
+        <div class = "row1">
+            <rect class="achievement" id="A0">Auto-cellerate please?</rect>
+            <rect class="achievement" id="A1">testtesttesttesttesttest</rect>
+            <rect class="achievement" id="A2">???</rect>
+            <rect class="achievement" id="A3">???</rect>
+            <rect class="achievement" id="A4">???</rect>
+            <rect class="achievement" id="A5">???</rect>
+            <rect class="achievement" id="A6">???</rect>
+            <rect class="achievement" id="A7">???</rect>
+            <rect class="achievement" id="A8">???</rect>
+            <rect class="achievement" id="A9">???</rect>
+        </div>
     </div>
-    <div id = "optionsMenu" class = "menu">
-        <input type = "range" min = "0" max = "5" value = "5" id = "tickSpeedSlider"> </input>
-        <p id ="tickSpeedSliderOutput">1000 ms/tick</p>
+    <div id="optionsMenu" class="menu">
+        <input type="range" min="0" max="5" value="1" id="tickSpeedSlider"> </input>
+        <p id="tickSpeedSliderOutput">1000 ms/tick</p>
     </div>
     <script src="main.js" charset="utf-8" type="text/javascript"></script>
     <!--uncomment below code once reset all data is implemented
         <body onload="loadSaveGame()"></body>
     -->
 </body>
+
 </html>
