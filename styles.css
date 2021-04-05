@@ -1,13 +1,12 @@
 .row1 {
     display: inline-flex;
-    width: 100%;
     flex-direction: row;
 }
 .achievement {
 width: 100px;
 height: 100px;
 border: 2px solid white;
-background-color: black;
+background-color: grey;
 }
 .energyBuildings {  
     display: grid

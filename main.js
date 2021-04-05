@@ -1,17 +1,19 @@
 let gameData = {
-    currency: 1000,
+    currency: 1,
     currencyPerClick: 1,
-    speed: 0.001,
+    speed: 1,
     energy: 0,
     energyProduction: 0,
     mass: 2000000000,
     buildings: {
-        B0: { price: 50, amountOwned: 0, production: 0.001 },
-        B1: { price: 500, amountOwned: 0, production: 0.01 }
+        B0: { price: 50, amountOwned: 0, production: 1 },
+        B1: { price: 500, amountOwned: 0, production: 10 }
     },
-    unit: 0.001,
+    unit: 1,
     lastTick: Date.now(),
-    achievements: [{ unlocked: false, property: 'speed', value: 0.01, reward() { gameData.autobuyers.accelerate[0] = true } },],
+    achievements: [{ unlocked: false, property: 'speed', value: 10, reward() { gameData.autobuyers.accelerate[0] = true } },
+                   { unlocked: false, property: 'speed', value: 100, reward() {} },
+                    ],
     settings: { tickSpeed: 100, },
     autobuyers: { accelerate: [false, false], }
 }
@@ -25,10 +27,10 @@ function loadSaveGame() {
 function calculateOfflineProgress() {
     diff = Date.now() - gameData.lastTick;
     gameData.lastTick = Date.now()
-    gameData.currency += gameData.speed * 1000 * (diff / 1000)
+    gameData.currency += gameData.speed * (diff / 1000)
     document.getElementById("currencyVisual").innerHTML = Math.floor(gameData.currency) + " Currency"
     gameData.energy += totalEnergyProduction() * (diff / 1000)
-    document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy * 1000) + " miliJoules of energy"
+    document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy) + " miliJoules of energy"
 }
 function totalEnergyProduction() {
     totalOutput = 0
@@ -39,7 +41,7 @@ function totalEnergyProduction() {
 }
 function giveCurrency() {
     gameData.currency += gameData.currencyPerClick
-    document.getElementById("currencyVisual").innerHTML = gameData.currency + " Currency"
+    document.getElementById("currencyVisual").innerHTML = Math.floor(gameData.currency) + " Currency"
 };
 function buyBuilding(building, id, name) {
     if (gameData.currency >= building.price) {
@@ -48,24 +50,27 @@ function buyBuilding(building, id, name) {
         building.price = Math.ceil(building.price * 1.2)
         document.getElementById(id).innerHTML = "Buy a " + name + " for " + building.price + " currency"
         document.getElementById("currencyVisual").innerHTML = Math.floor(gameData.currency) + " Currency"
-        document.getElementById("energyProductionVisual").innerHTML = Math.floor(totalEnergyProduction() * 1000) + " mJ/s"
+        document.getElementById("energyProductionVisual").innerHTML = Math.floor(totalEnergyProduction()) + " mJ/s"
     }
 
 }
 function increaseSpeed() {
-    let energyNeeded = Math.round(gameData.mass / 2000 * (gameData.unit ** 2 + 2 * gameData.unit * gameData.speed)) / 1000
+    let x = document.getElementById("increaseSpeedSelector")
+    let incrementAmount = parseInt(x.options[x.selectedIndex].value)
+    let energyNeeded = Math.round(gameData.mass / 2000 * ((incrementAmount/1000) ** 2 + 2 * (incrementAmount/1000) * gameData.speed/1000))
     if (gameData.energy >= energyNeeded) {
         gameData.energy -= energyNeeded
-        gameData.speed += gameData.unit
-        energyNeeded = Math.round(gameData.mass / 2000 * (gameData.unit ** 2 + 2 * gameData.unit * gameData.speed)) / 1000
-        document.getElementById("increaseSpeed").innerHTML = "Increase your speed by 1mm/s for " + energyNeeded * 1000 + " miliJoules of energy"
-        document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy * (1 / gameData.unit)) + " miliJoules of energy"
-        document.getElementById("speedVisual").innerHTML = Math.floor(gameData.speed * (1 / gameData.unit)) + " mm/s"
+        gameData.speed += incrementAmount
+        energyNeeded = Math.round(gameData.mass / 2000 * ((incrementAmount/1000) ** 2 + 2 * (incrementAmount/1000) * gameData.speed/1000))
+        document.getElementById("increaseSpeed").innerHTML = "for " + energyNeeded + " miliJoules of energy"
+        document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy) + " miliJoules of energy"
+        document.getElementById("speedVisual").innerHTML = Math.floor(gameData.speed) + " mm/s"
     }
 }
 function navigate(menu) {
     x = document.getElementsByClassName("menu")
-    if (menu === 2) { loadAchievements() }
+    if (menu === 2) { loadAchievementsMenu() }
+    if (menu === 0) {loadSpeedMenu()}
     for (i = 0; i < x.length; i++) {
         x[i].style.display = "none"
     }
@@ -83,24 +88,43 @@ function checkAchievements() {
 
     }
 }
-function loadAchievements() {
+function loadAchievementsMenu() {
     checkAchievements()
     for (i in gameData.achievements) {
         if (gameData.achievements[i].unlocked === true) {
         document.getElementById("A"+ i).style.backgroundColor = "green"
         }
         else {
-        document.getElementById("A"+ i).style.backgroundColor = "black" 
+        document.getElementById("A"+ i).style.backgroundColor = "grey" 
         }
     }
 
 }
+function loadSpeedMenu() {
+    if (gameData.achievements[1].unlocked === true) {
+        let selector = document.getElementById("increaseSpeedSelector")      
+        for (i = selector.length; i < Math.floor(Math.log10(gameData.speed)); i++) {
+            if (selector.options[i] === Math.floor(Math.log10(gameData.speed))) {break}
+            let option = document.createElement("option")
+            option.value = (10**i)
+            option.text = (10**i) + " mm/s"
+            selector.add(option)
+        }
+    }
+}
+document.addEventListener('input', function (event) {
+	if (event.target.id !== 'increaseSpeedSelector') return;
+    let x = document.getElementById("increaseSpeedSelector")
+    let incrementAmount = parseInt(x.options[x.selectedIndex].value)
+    let energyNeeded = Math.round(gameData.mass / 2000 * ((incrementAmount/1000) ** 2 + 2 * (incrementAmount/1000) * gameData.speed/1000))
+    document.getElementById("increaseSpeed").innerHTML = "for " + energyNeeded + " miliJoules of energy"  
+}, false);
 //mainGameLoop updates gameData and visuals
 let mainGameLoop = null
 function gameCalcluations() {
     mainGameLoop = window.setInterval(function () {
         if (gameData.autobuyers.accelerate[0] === true) { increaseSpeed(); }
-        gameData.currency += gameData.speed * 1000 / (1000 / gameData.settings.tickSpeed)
+        gameData.currency += gameData.speed / (1000 / gameData.settings.tickSpeed)
         gameData.energy += totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
         document.getElementById("currencyVisual").innerHTML = Math.floor(gameData.currency) + " Currency"
         document.getElementById("energyVisual").innerHTML = Math.floor(gameData.energy * (1 / gameData.unit)) + " miliJoules of energy"

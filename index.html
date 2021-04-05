@@ -24,8 +24,11 @@
     </div>
     <div id="speedMenu" class="menu">
         <button onclick="giveCurrency()">give currency</button>
-        <button onclick="increaseSpeed()" id="increaseSpeed">Increase your speed by 1mm/s for 3 miliJoules of
-            energy</button>
+        Increase your speed by
+        <select id = "increaseSpeedSelector" onlick = "increaseSpeed()">
+            <option value = 1 selected>1 mm/s</option>
+        </select>
+        <button onclick="increaseSpeed()" id="increaseSpeed"> for 3 miliJoules of energy</button>
     </div>
     <div id="energyMenu" class="menu">
         <div class="energyBuildings">
@@ -38,7 +41,7 @@
     <div id="achievementsMenu" class="menu">
         <div class = "row1">
             <rect class="achievement" id="A0">Auto-cellerate please?</rect>
-            <rect class="achievement" id="A1">testtesttesttesttesttest</rect>
+            <rect class="achievement" id="A1">Faster than a tortoise</rect>
             <rect class="achievement" id="A2">???</rect>
             <rect class="achievement" id="A3">???</rect>
             <rect class="achievement" id="A4">???</rect>
