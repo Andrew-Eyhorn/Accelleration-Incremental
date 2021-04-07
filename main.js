@@ -11,8 +11,8 @@ let gameData = {
     },
     unit: 1,
     lastTick: Date.now(),
-    achievements: [{ unlocked: false, property: 'speed', value: 10, reward() { gameData.autobuyers.accelerate[0] = true } },
-                   { unlocked: false, property: 'speed', value: 100, reward() {} },
+    achievements: [{ id: "A0", name: "Auto-cellerate please?", tooltip: "Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate", unlocked: false, property: 'speed', value: 10, reward() { gameData.autobuyers.accelerate[0] = true } },
+                   { id: "A1", name: "Faster than a sloth", tooltip: 'Accelerate to 100 mm/s<br>Reward: You can accelerate by higher increments based on your highest speed', unlocked: false, property: 'speed', value: 100, reward() {} },
                     ],
     settings: { tickSpeed: 100, },
     autobuyers: { accelerate: [false, false], }
@@ -76,7 +76,6 @@ function navigate(menu) {
     }
     x[menu].style.display = "inline-block"
 }
-navigate(0)
 function checkAchievements() {
     for (i in gameData.achievements) {
         currentAchievement = gameData.achievements[i]
@@ -92,10 +91,10 @@ function loadAchievementsMenu() {
     checkAchievements()
     for (i in gameData.achievements) {
         if (gameData.achievements[i].unlocked === true) {
-        document.getElementById("A"+ i).style.backgroundColor = "green"
+        document.getElementById(gameData.achievements[i].id).style.backgroundColor = "green"
         }
         else {
-        document.getElementById("A"+ i).style.backgroundColor = "grey" 
+        document.getElementById(gameData.achievements[i].id).style.backgroundColor = "grey" 
         }
     }
 
@@ -110,6 +109,19 @@ function loadSpeedMenu() {
             option.text = (10**i) + " mm/s"
             selector.add(option)
         }
+    }
+}
+function generateAchievements() {
+    for (let achievement of gameData.achievements) {
+        let newAchievement = document.createElement("rect")
+        newAchievement.id = achievement.id
+        newAchievement.className = "achievement"
+        newAchievement.innerHTML = achievement.name
+        document.getElementById('achievements').append(newAchievement)
+        tippy('#' + achievement.id, {
+            content: achievement.tooltip,
+            allowHTML: true
+          })
     }
 }
 document.addEventListener('input', function (event) {
@@ -133,7 +145,6 @@ function gameCalcluations() {
 function stopGameCalculations() {
     clearInterval(mainGameLoop)
 }
-gameCalcluations()
 //code for tickSpeedSlider option
 let tickSpeedSliderValues = [50, 100, 125, 250, 500, 1000]
 let slider = document.getElementById("tickSpeedSlider");
@@ -145,8 +156,19 @@ slider.oninput = function () {
     stopGameCalculations()
     gameCalcluations()
 }
+navigate(0)
+generateAchievements()
+gameCalcluations()
 //uncomment below code once reset all data is implemented
 /*let saveGameLoop = window.setInterval(function() {
     gameData.lastTick = Date.now()
     localStorage.setItem("saveGame", JSON.stringify(gameData))
   }, 15000) */
+//   tippy('#A0', {
+//     content: 'Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate',
+//     allowHTML: true
+//   })
+//   tippy('#A1', {
+//     content: 'Accelerate to 100 mm/s<br>Reward: You can accelerate by higher increments based on your highest speed',
+//     allowHTML: true
+//   })

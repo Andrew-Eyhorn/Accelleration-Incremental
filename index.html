@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceleration-Incremental</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?m=2">
 </head>
 
 <body>
@@ -39,8 +39,8 @@
         </div>
     </div>
     <div id="achievementsMenu" class="menu">
-        <div class = "row1">
-            <rect class="achievement" id="A0">Auto-cellerate please?</rect>
+        <!-- <div class = "row1">
+            <rect class="achievement" id="A0">Auto-celerate please?</rect>
             <rect class="achievement" id="A1">Faster than a tortoise</rect>
             <rect class="achievement" id="A2">???</rect>
             <rect class="achievement" id="A3">???</rect>
@@ -50,12 +50,15 @@
             <rect class="achievement" id="A7">???</rect>
             <rect class="achievement" id="A8">???</rect>
             <rect class="achievement" id="A9">???</rect>
-        </div>
+        </div> -->
+        <div id = "achievements"></div>
     </div>
     <div id="optionsMenu" class="menu">
         <input type="range" min="0" max="5" value="1" id="tickSpeedSlider"> </input>
         <p id="tickSpeedSliderOutput">1000 ms/tick</p>
     </div>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
     <script src="main.js" charset="utf-8" type="text/javascript"></script>
     <!--uncomment below code once reset all data is implemented
         <body onload="loadSaveGame()"></body>
