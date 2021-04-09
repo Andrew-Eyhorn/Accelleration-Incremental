@@ -9,6 +9,9 @@
     background-color: grey;
 }
 
-.energyBuildings {  
+#energyBuildings {  
     display: grid
+}
+.buyingAmountButton {
+    opacity: 50%;
 }
