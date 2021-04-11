@@ -36,22 +36,21 @@
         <button onclick="switchBulkBuy('buy10')" class="bulkBuyButton" id="buy10">10</button>
         <button onclick="switchBulkBuy('buy100')" class="bulkBuyButton" id="buy100">100</button>
         <button onclick="switchBulkBuy('buyMax')" class="bulkBuyButton" id="buyMax">Max</button>
-        <div id="energyBuildings">
-            <!-- <button onclick="buyBuilding(gameData.buildings.B0, 'B0', 'CR2032 Button Battery')" id="B0">Buy a CR2032
-                Button Battery for 50 currency</button>
-            <button onclick="buyBuilding(gameData.buildings.B1, 'B1', 'CR4250 Button Battery')" id="B1">Buy a CR4250
-                Button Battery for 500 currency</button> -->
-        </div>
+        <div id="energyBuildings"></div>
     </div>
     <div id="achievementsMenu" class="menu">
         <div id = "achievements"></div>
     </div>
     <div id="optionsMenu" class="menu">
+        <p id="tickSpeedSliderOutput">Tickspeed: 100 ms/tick</p>
         <input type="range" min="0" max="5" value="1" id="tickSpeedSlider"> </input>
-        <p id="tickSpeedSliderOutput">1000 ms/tick</p>
+        <div> Number Display Options: 
+            <select></select>
+        </div>
     </div>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
+    <script src="http://cdn.rawgit.com/erosson/swarm-numberformat/v0.4.0/dist/swarm-numberformat.min.js"></script>
     <script src="main.js" charset="utf-8" type="text/javascript"></script>
     <!--uncomment below code once reset all data is implemented
         <body onload="loadSaveGame()"></body>

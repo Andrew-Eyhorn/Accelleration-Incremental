@@ -121,7 +121,6 @@ function generateBuildings() {
         document.getElementById("energyBuildings").append(newBuilding)
         tippy('#' + building.id, {
             content: "You have " + building.amountOwned + " " + building.name + " producing " + building.amountOwned*building.production + "mj/s",
-            allowHTML: true
           })
     }
 }
@@ -148,7 +147,7 @@ function switchBulkBuy(buyAmount) {
              document.getElementById(buyAmount).style.opacity = "100%"
              break;
     }
-    showBuildingsPrices()
+    showBuildingStats()
 }
 function calculateBuildingPrice(building) {
     if (gameData.bulkBuy === "Max") {
@@ -179,13 +178,15 @@ function buyBuilding(building) {
         }
     }
 }
-function showBuildingsPrices() {
+function showBuildingStats() {
     for (let building of gameData.buildings) {
         if (gameData.bulkBuy === "Max") {
             document.getElementById(building.id).textContent = "Buy " + calculateBuildingPrice(building)[1]  + building.name + " for " + calculateBuildingPrice(building)[0] + " currency"
         } else {
             document.getElementById(building.id).textContent = "Buy " + gameData.bulkBuy + building.name + " for " + calculateBuildingPrice(building) + " currency"
             }
+        const instance = tippy(document.getElementById(building.id))
+        instance.setContent("You have " + building.amountOwned + " " + building.name + " producing " + building.amountOwned*building.production + "mj/s")
         }
 }
 document.addEventListener('input', function (event) {
@@ -193,27 +194,27 @@ document.addEventListener('input', function (event) {
     let x = document.getElementById("increaseSpeedSelector")
     let incrementAmount = parseInt(x.options[x.selectedIndex].value)
     let energyNeeded = Math.round(gameData.mass / 2000 * ((incrementAmount/1000) ** 2 + 2 * (incrementAmount/1000) * gameData.speed/1000))
-    document.getElementById("increaseSpeed").textContent = "for " + energyNeeded + " miliJoules of energy"
+    document.getElementById("increaseSpeed").textContent = "for " + numberformat.format(energyNeeded, {format: 'standard'}) + " miliJoules of energy"
 }, false);
 //mainGameLoop updates gameData and visuals
 let mainGameLoop = null
 function gameCalcluations() {
     mainGameLoop = window.setInterval(function () {
         if (gameData.autobuyers.accelerate[0] === true) { increaseSpeed(); }
+        if (document.getElementsByClassName("menu")[1].style.display === 'inline-block') { showBuildingStats(); }
         gameData.currency += gameData.speed / (1000 / gameData.settings.tickSpeed)
         gameData.energy += totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
-        document.getElementById("currencyVisual").textContent = Math.floor(gameData.currency) + " Currency"
-        document.getElementById("energyVisual").textContent = Math.floor(gameData.energy * (1 / gameData.unit)) + " miliJoules of energy"
+        document.getElementById("currencyVisual").textContent = numberformat.format(gameData.currency, {format: 'standard'}) + " Currency"
+        document.getElementById("energyVisual").textContent = numberformat.format(gameData.energy, {format: 'standard'}) + " miliJoules of energy"
     }, gameData.settings.tickSpeed)
 }
 function stopGameCalculations() {
     clearInterval(mainGameLoop)
 }
-//code for tickSpeedSlider option
 let tickSpeedSliderValues = [50, 100, 125, 250, 500, 1000]
 let slider = document.getElementById("tickSpeedSlider");
 let sliderOutput = document.getElementById("tickSpeedSliderOutput")
-sliderOutput.textContent = tickSpeedSliderValues[slider.value]
+sliderOutput.textContent = "Tickspeed: " + tickSpeedSliderValues[slider.value] + " ms/tick"
 slider.oninput = function () {
     sliderOutput.textContent = tickSpeedSliderValues[slider.value]
     gameData.settings.tickSpeed = tickSpeedSliderValues[slider.value]
