@@ -5,7 +5,7 @@ let gameData = {
     energy: 0,
     energyProduction: 0,
     mass: 2000000000,
-    buildings: [ { id: "B0", name: "CR2032 Button Battery", unlocked : true, price: 50, amountOwned: 0, production: 1 },
+    buildings: [ { id: "B0", name: "CR2032 Button Battery", unlocked : false, price: 50, amountOwned: 0, production: 1 },
                  { id: "B1", name: "CR4250 Button Battery", unlocked : false, price: 500, amountOwned: 0, production: 10 }],
     unit: 1,
     lastTick: Date.now(),
@@ -118,11 +118,13 @@ function generateBuildings() {
         newBuilding.onclick = function() { buyBuilding(building);};
         newBuilding.id = building.id
         newBuilding.textContent = "Buy a " + building.name + " for " + building.price + " currency"
+        newBuilding.style.display = "none"
         document.getElementById("energyBuildings").append(newBuilding)
         tippy('#' + building.id, {
             content: "You have " + building.amountOwned + " " + building.name + " producing " + building.amountOwned*building.production + "mj/s",
           })
     }
+    document.getElementById(gameData.buildings[0].id).style.display = "inline-block"
 }
 function switchBulkBuy(buyAmount) {
     let buttons = document.getElementsByClassName("bulkBuyButton")
@@ -147,7 +149,7 @@ function switchBulkBuy(buyAmount) {
              document.getElementById(buyAmount).style.opacity = "100%"
              break;
     }
-    showBuildingStats()
+    showBuildings()
 }
 function calculateBuildingPrice(building) {
     if (gameData.bulkBuy === "Max") {
@@ -178,7 +180,8 @@ function buyBuilding(building) {
         }
     }
 }
-function showBuildingStats() {
+function showBuildings() {
+    let previousPurchased = false
     for (let building of gameData.buildings) {
         if (gameData.bulkBuy === "Max") {
             document.getElementById(building.id).textContent = "Buy " + calculateBuildingPrice(building)[1]  + building.name + " for " + calculateBuildingPrice(building)[0] + " currency"
@@ -187,7 +190,15 @@ function showBuildingStats() {
             }
         const instance = tippy(document.getElementById(building.id))
         instance.setContent("You have " + building.amountOwned + " " + building.name + " producing " + building.amountOwned*building.production + "mj/s")
+        if (building.unlocked === false && previousPurchased ) {
+            building.unlocked = true
+            document.getElementById(building.id).style.display = "inline-block"
+            return
         }
+        if (building.amountOwned > 0) {
+            previousPurchased = true
+        }
+    }
 }
 document.addEventListener('input', function (event) {
 	if (event.target.id !== 'increaseSpeedSelector') return;
@@ -201,7 +212,8 @@ let mainGameLoop = null
 function gameCalcluations() {
     mainGameLoop = window.setInterval(function () {
         if (gameData.autobuyers.accelerate[0] === true) { increaseSpeed(); }
-        if (document.getElementsByClassName("menu")[1].style.display === 'inline-block') { showBuildingStats(); }
+        if (document.getElementsByClassName("menu")[1].style.display === 'inline-block') { showBuildings(); }
+        checkAchievements()
         gameData.currency += gameData.speed / (1000 / gameData.settings.tickSpeed)
         gameData.energy += totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
         document.getElementById("currencyVisual").textContent = numberformat.format(gameData.currency, {format: 'standard'}) + " Currency"
@@ -231,11 +243,3 @@ gameCalcluations()
     gameData.lastTick = Date.now()
     localStorage.setItem("saveGame", JSON.stringify(gameData))
   }, 15000) */
-//   tippy('#A0', {
-//     content: 'Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate',
-//     allowHTML: true
-//   })
-//   tippy('#A1', {
-//     content: 'Accelerate to 100 mm/s<br>Reward: You can accelerate by higher increments based on your highest speed',
-//     allowHTML: true
-//   })

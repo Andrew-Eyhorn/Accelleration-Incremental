@@ -15,3 +15,8 @@
 .buyingAmountButton {
     opacity: 50%;
 }
+#popupNotification {
+    position:absolute;
+    top:0;
+    right:0
+}
