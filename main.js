@@ -242,10 +242,10 @@ function gameCalcluations() {
         if (document.getElementsByClassName("menu")[1].style.display === 'inline-block') { showBuildings(); }
         gameData.currency += gameData.speed / (1000 / gameData.settings.tickSpeed)
         gameData.energy += totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
-        // document.getElementById("currencyVisual").firstChild.data = numberformat.format(gameData.currency, {format: 'standard'}) + " Currency"
-        // document.getElementById("energyVisual").firstChild.data = numberformat.format(gameData.energy, {format: 'standard'}) + " miliJoules of energy"
-        document.getElementById("currencyVisual").firstChild.data = gameData.currency+ " Currency"
-        document.getElementById("energyVisual").firstChild.data = gameData.energy + " miliJoules of energy"
+        document.getElementById("currencyVisual").firstChild.data = numberformat.format(gameData.currency, {format: 'standard'}) + " Currency"
+        document.getElementById("energyVisual").firstChild.data = numberformat.format(gameData.energy, {format: 'standard'}) + " miliJoules of energy"
+        //document.getElementById("currencyVisual").firstChild.data = gameData.currency+ " Currency"
+        //document.getElementById("energyVisual").firstChild.data = gameData.energy + " miliJoules of energy"
     }, gameData.settings.tickSpeed)
 }
 function stopGameCalculations() {
