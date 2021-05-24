@@ -1,3 +1,17 @@
+//array for number formatting
+let standard = {full:[""," thousand"," million"," billion"," trillion"," quadrillion"," quintillion"," sextillion"," septillion"," octillion"," nonillion"," decillion"," undecillion"," duodecillion"," tredecillion"," quattuordecillion"," quinquadecillion"," sedecillion"," septendecillion"," octodecillion"," novendecillion"," vigintillion"," unvigintillion"," duovigintillion"," tresvigintillion"," quattuorvigintillion"," quinquavigintillion"," sesvigintillion"," septemvigintillion"," octovigintillion"," novemvigintillion"," trigintillion"," untrigintillion"," duotrigintillion"," trestrigintillion"," quattuortrigintillion"," quinquatrigintillion"," sestrigintillion"," septentrigintillion"," octotrigintillion"," noventrigintillion"," quadragintillion"," unquadragintillion"," duoquadragintillion"," tresquadragintillion"," quattuorquadragintillion"," quinquaquadragintillion"," sesquadragintillion"," septenquadragintillion"," octoquadragintillion"," novenquadragintillion"," quinquagintillion"," unquinquagintillion"," duoquinquagintillion"," tresquinquagintillion"," quattuorquinquagintillion"," quinquaquinquagintillion"," sesquinquagintillion"," septenquinquagintillion"," octoquinquagintillion"," novenquinquagintillion"," sexagintillion"," unsexagintillion"," duosexagintillion"," tresexagintillion"," quattuorsexagintillion"," quinquasexagintillion"," sesexagintillion"," septensexagintillion"," octosexagintillion"," novensexagintillion"," septuagintillion"," unseptuagintillion"," duoseptuagintillion"," treseptuagintillion"," quattuorseptuagintillion"," quinquaseptuagintillion"," seseptuagintillion"," septenseptuagintillion"," octoseptuagintillion"," novenseptuagintillion"," octogintillion"," unoctogintillion"," duooctogintillion"],
+short:["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","UDc","DDc","TDc","QaDc","QiDc","SxDc","SpDc","ODc","NDc","Vi","UVi","DVi","TVi","QaVi","QiVi","SxVi","SpVi","OVi","NVi","Tg","UTg","DTg","TTg","QaTg","QiTg","SxTg","SpTg","OTg","NTg","Qd","UQd","DQd","TQd","QaQd","QiQd","SxQd","SpQd","OQd","NQd","Qq","UQq","DQq","TQq","QaQq","QiQq","SxQq","SpQq","OQq","NQq","Sg","USg","DSg","TSg","QaSg","QiSg","SxSg","SpSg","OSg","NSg","St","USt","DSt","TSt","QaSt","QiSt","SxSt","SpSt","OSt","NSt","Og","UOg","DOg","TOg","QaOg","QiOg","SxOg","SpOg","OOg","NOg"],
+}
+function format(number, unit) {
+    if (number<10000) return Math.floor(number) + " " + unit
+    if (number === 0) var size = 1
+    else var size = Math.floor(Math.log10(Math.floor(number)))+1
+    var output = Number(String(Math.floor(number)).slice(0,5))
+    var decimalPosition = -1.5*(size%3)**2+3.5*(size%3)+2 //determines where to put the decimal place for the formatted number
+    output = Number(parseFloat((output/10**(decimalPosition)).toFixed(decimalPosition)))
+    return output + " " + gameData.settings.format[Math.floor((size-1)/3)] + " "+ unit
+}
+//gameData has all gameplay related values
 let gameData = {
     currency: 1,
     currencyPerClick: 1,
@@ -12,10 +26,12 @@ let gameData = {
     achievements: [{ id: "A0", name: "Auto-cellerate please?", tooltip: "Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate", unlocked: false, property: 'speed', value: 10, reward() { gameData.autobuyers.accelerate[0] = true } },
                    { id: "A1", name: "Faster than a sloth", tooltip: 'Accelerate to 100 mm/s<br>Reward: You can accelerate by higher increments based on your highest speed', unlocked: false, property: 'speed', value: 100, reward() {} },
                     ],
-    settings: { tickSpeed: 100, },
+    settings: { tickSpeed: 100, format: standard.short },
     bulkBuy: 1,
     autobuyers: { accelerate: [false, false], }
 }
+
+
 function loadSaveGame() {
     let savegame = JSON.parse(localStorage.getItem("saveGame"))
     if (savegame !== null) {
@@ -232,7 +248,7 @@ document.addEventListener('input', function (event) {
     let x = document.getElementById("increaseSpeedSelector")
     let incrementAmount = parseInt(x.options[x.selectedIndex].value)
     let energyNeeded = Math.round(gameData.mass / 2000 * ((incrementAmount/1000) ** 2 + 2 * (incrementAmount/1000) * gameData.speed/1000))
-    document.getElementById("increaseSpeed").firstChild.data = "for " + numberformat.format(energyNeeded, {format: 'standard'}) + " miliJoules of energy"
+    document.getElementById("increaseSpeed").firstChild.data = "for " + format(energyNeeded, "") + " miliJoules of energy"
 }, false);
 //mainGameLoop updates gameData and visuals
 let mainGameLoop = null
@@ -242,8 +258,8 @@ function gameCalcluations() {
         if (document.getElementsByClassName("menu")[1].style.display === 'inline-block') { showBuildings(); }
         gameData.currency += gameData.speed / (1000 / gameData.settings.tickSpeed)
         gameData.energy += totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
-        document.getElementById("currencyVisual").firstChild.data = numberformat.format(gameData.currency, {format: 'standard'}) + " Currency"
-        document.getElementById("energyVisual").firstChild.data = numberformat.format(gameData.energy, {format: 'standard'}) + " miliJoules of energy"
+        document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
+        document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "") + " miliJoules of energy"
         //document.getElementById("currencyVisual").firstChild.data = gameData.currency+ " Currency"
         //document.getElementById("energyVisual").firstChild.data = gameData.energy + " miliJoules of energy"
     }, gameData.settings.tickSpeed)
@@ -251,7 +267,7 @@ function gameCalcluations() {
 function stopGameCalculations() {
     clearInterval(mainGameLoop)
 }   
-let tickSpeedSliderValues = [50, 100, 125, 250, 500, 1000]
+let tickSpeedSliderValues = [50, 100, 125, 250, 500, 1000]  
 let slider = document.getElementById("tickSpeedSlider");
 let sliderOutput = document.getElementById("tickSpeedSliderOutput")
 sliderOutput.firstChild.data = "Tickspeed: " + tickSpeedSliderValues[slider.value] + " ms/tick"
