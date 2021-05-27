@@ -3,12 +3,16 @@ let standard = {full:[""," thousand"," million"," billion"," trillion"," quadril
 short:["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","UDc","DDc","TDc","QaDc","QiDc","SxDc","SpDc","ODc","NDc","Vi","UVi","DVi","TVi","QaVi","QiVi","SxVi","SpVi","OVi","NVi","Tg","UTg","DTg","TTg","QaTg","QiTg","SxTg","SpTg","OTg","NTg","Qd","UQd","DQd","TQd","QaQd","QiQd","SxQd","SpQd","OQd","NQd","Qq","UQq","DQq","TQq","QaQq","QiQq","SxQq","SpQq","OQq","NQq","Sg","USg","DSg","TSg","QaSg","QiSg","SxSg","SpSg","OSg","NSg","St","USt","DSt","TSt","QaSt","QiSt","SxSt","SpSt","OSt","NSt","Og","UOg","DOg","TOg","QaOg","QiOg","SxOg","SpOg","OOg","NOg"],
 }
 function format(number, unit) {
+    if (gameData.settings.format === "scientific") {
+        var output = number.toExponential()
+        return parseFloat(output).toPrecision(5)
+    }
     if (number<10000) return Math.floor(number) + " " + unit
     if (number === 0) var size = 1
     else var size = Math.floor(Math.log10(Math.floor(number)))+1
     var output = Number(String(Math.floor(number)).slice(0,5))
     var decimalPosition = -1.5*(size%3)**2+3.5*(size%3)+2 //determines where to put the decimal place for the formatted number
-    output = Number(parseFloat((output/10**(decimalPosition)).toFixed(decimalPosition)))
+    output = Number(parseFloat((output/10**decimalPosition).toFixed(decimalPosition)))
     return output + " " + gameData.settings.format[Math.floor((size-1)/3)] + " "+ unit
 }
 //gameData has all gameplay related values
@@ -216,6 +220,22 @@ function showBuildings() {
             previousPurchased = true
         }
     }
+}
+function changeFormat() {
+    switch(parseInt(document.getElementById("formatSelect").value)) {
+        case 0:
+            gameData.settings.format = standard.full
+            break;
+        case 1:
+            gameData.settings.format = standard.short
+            break;
+        case 2:
+            gameData.settings.format = "scientific"
+            break;
+        default: 
+            console.log("help" + document.getElementById("formatSelect").value)
+    }
+    // gameData.settings.format = document.getElementById("formatSelect").value
 }
 async function notification(text) {
     const delay = ms => new Promise(res => setTimeout(res, ms));
