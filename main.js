@@ -3,14 +3,17 @@ let standard = {full:[""," thousand"," million"," billion"," trillion"," quadril
 short:["","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc","UDc","DDc","TDc","QaDc","QiDc","SxDc","SpDc","ODc","NDc","Vi","UVi","DVi","TVi","QaVi","QiVi","SxVi","SpVi","OVi","NVi","Tg","UTg","DTg","TTg","QaTg","QiTg","SxTg","SpTg","OTg","NTg","Qd","UQd","DQd","TQd","QaQd","QiQd","SxQd","SpQd","OQd","NQd","Qq","UQq","DQq","TQq","QaQq","QiQq","SxQq","SpQq","OQq","NQq","Sg","USg","DSg","TSg","QaSg","QiSg","SxSg","SpSg","OSg","NSg","St","USt","DSt","TSt","QaSt","QiSt","SxSt","SpSt","OSt","NSt","Og","UOg","DOg","TOg","QaOg","QiOg","SxOg","SpOg","OOg","NOg"],
 }
 function format(number, unit) {
+    if (number<10000) return Math.floor(number) + " " + unit
     if (gameData.settings.format === "scientific") {
         var output = number.toExponential()
         return parseFloat(output).toPrecision(5)
     }
-    if (number<10000) return Math.floor(number) + " " + unit
+    if (number > Number.MAX_SAFE_INTEGER) {
+        var output = Number(String(Math.floor(number)).slice(0,1) + String(Math.floor(number)).slice(2,6))
+    } 
+    else var output = Number(String(Math.floor(number)).slice(0,5))
     if (number === 0) var size = 1
     else var size = Math.floor(Math.log10(Math.floor(number)))+1
-    var output = Number(String(Math.floor(number)).slice(0,5))
     var decimalPosition = -1.5*(size%3)**2+3.5*(size%3)+2 //determines where to put the decimal place for the formatted number
     output = Number(parseFloat((output/10**decimalPosition).toFixed(decimalPosition)))
     return output + " " + gameData.settings.format[Math.floor((size-1)/3)] + " "+ unit
@@ -47,9 +50,9 @@ function calculateOfflineProgress() {
     diff = Date.now() - gameData.lastTick;
     gameData.lastTick = Date.now()
     gameData.currency += gameData.speed * (diff / 1000)
-    document.getElementById("currencyVisual").firstChild.data = Math.floor(gameData.currency) + " Currency"
+    document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
     gameData.energy += totalEnergyProduction() * (diff / 1000)
-    document.getElementById("energyVisual").firstChild.data = Math.floor(gameData.energy) + " miliJoules of energy"
+    document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "milijoules") + " energy"
 }
 function totalEnergyProduction() {
     totalOutput = 0
@@ -60,7 +63,7 @@ function totalEnergyProduction() {
 }
 function giveCurrency() {
     gameData.currency += gameData.currencyPerClick
-    document.getElementById("currencyVisual").firstChild.data = Math.floor(gameData.currency) + " Currency"
+    document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
 };
 function increaseSpeed() {
     let x = document.getElementById("increaseSpeedSelector")
@@ -70,9 +73,9 @@ function increaseSpeed() {
         gameData.energy -= energyNeeded
         gameData.speed += incrementAmount
         energyNeeded = Math.round(gameData.mass / 2000 * ((incrementAmount/1000) ** 2 + 2 * (incrementAmount/1000) * gameData.speed/1000))
-        document.getElementById("increaseSpeed").firstChild.data = "for " + energyNeeded + " miliJoules of energy"
-        document.getElementById("energyVisual").firstChild.data = Math.floor(gameData.energy) + " miliJoules of energy"
-        document.getElementById("speedVisual").firstChild.data = Math.floor(gameData.speed) + " mm/s"
+        document.getElementById("increaseSpeed").firstChild.data = "for " + format(energyNeeded, "milijoules") + " energy"
+        document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "milijoules") + " energy"
+        document.getElementById("speedVisual").firstChild.data = format(speed, "mm/s")
     }
 }
 function navigate(menu) {
@@ -142,7 +145,7 @@ function generateBuildings() {
         newBuilding.style.display = "none"
         document.getElementById("energyBuildings").append(newBuilding)
         tippy('#' + building.id, {
-            content: "You have " + building.amountOwned + " " + building.name + " producing " + building.amountOwned*building.production + "mj/s",
+            content: "You have " + building.amountOwned + " " + building.name + " producing " + format(building.amountOwned*building.production,"mj/s"),
           })
     }
     document.getElementById(gameData.buildings[0].id).style.display = "inline-block"
@@ -188,15 +191,15 @@ function buyBuilding(building) {
         priceAndAmount = calculateBuildingPrice(building)
         gameData.currency -= priceAndAmount[0]
         building.amountOwned += priceAndAmount[1]
-        document.getElementById(building.id).firstChild.data = "Buy " + calculateBuildingPrice(building)[1]  + building.name + " for " + calculateBuildingPrice(building)[0] + " currency"
-        document.getElementById("currencyVisual").firstChild.data = Math.floor(gameData.currency) + " Currency"
+        document.getElementById(building.id).firstChild.data = "Buy " + format(calculateBuildingPrice(building)[1], "")  + building.name + " for " + format(calculateBuildingPrice(building)[0], "") + " currency"
+        document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
         document.getElementById("energyProductionVisual").firstChild.data = Math.floor(totalEnergyProduction()) + " mJ/s"
     } else {
         if (gameData.currency >= calculateBuildingPrice(building)) {
             gameData.currency -= calculateBuildingPrice(building)
             building.amountOwned += gameData.bulkBuy
             document.getElementById(building.id).firstChild.data = "Buy " + gameData.bulkBuy + building.name + " for " + calculateBuildingPrice(building) + " currency"
-            document.getElementById("currencyVisual").firstChild.data = Math.floor(gameData.currency) + " Currency"
+            document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
             document.getElementById("energyProductionVisual").firstChild.data = Math.floor(totalEnergyProduction()) + " mJ/s"
         }
     }
@@ -270,7 +273,7 @@ document.addEventListener('input', function (event) {
     let energyNeeded = Math.round(gameData.mass / 2000 * ((incrementAmount/1000) ** 2 + 2 * (incrementAmount/1000) * gameData.speed/1000))
     document.getElementById("increaseSpeed").firstChild.data = "for " + format(energyNeeded, "") + " miliJoules of energy"
 }, false);
-//mainGameLoop updates gameData and visuals
+//mainGameLoop updates gameData values and visuals
 let mainGameLoop = null
 function gameCalcluations() {
     mainGameLoop = window.setInterval(function () {
@@ -279,9 +282,7 @@ function gameCalcluations() {
         gameData.currency += gameData.speed / (1000 / gameData.settings.tickSpeed)
         gameData.energy += totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
         document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
-        document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "") + " miliJoules of energy"
-        //document.getElementById("currencyVisual").firstChild.data = gameData.currency+ " Currency"
-        //document.getElementById("energyVisual").firstChild.data = gameData.energy + " miliJoules of energy"
+        document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "milijoules") + " energy"
     }, gameData.settings.tickSpeed)
 }
 function stopGameCalculations() {
@@ -292,7 +293,7 @@ let slider = document.getElementById("tickSpeedSlider");
 let sliderOutput = document.getElementById("tickSpeedSliderOutput")
 sliderOutput.firstChild.data = "Tickspeed: " + tickSpeedSliderValues[slider.value] + " ms/tick"
 slider.oninput = function () {
-    sliderOutput.firstChild.data = tickSpeedSliderValues[slider.value]
+    sliderOutput.firstChild.data = "Tickspeed: " + tickSpeedSliderValues[slider.value] + " ms/tick"
     gameData.settings.tickSpeed = tickSpeedSliderValues[slider.value]
     stopGameCalculations()
     gameCalcluations()
