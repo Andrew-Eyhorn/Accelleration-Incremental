@@ -202,7 +202,7 @@ function buyBuilding(building) {
         if (gameData.currency >= calculateBuildingPrice(building)) {
             gameData.currency -= calculateBuildingPrice(building)
             building.amountOwned += gameData.bulkBuy
-            document.getElementById(building.id).firstChild.data = "Buy " + gameData.bulkBuy + building.name + " for " + calculateBuildingPrice(building) + " currency"
+            document.getElementById(building.id).firstChild.data = "Buy " + format(gameData.bulkBuy,"") + building.name + " for " + format(calculateBuildingPrice(building),"") + " currency"
             document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
             document.getElementById("energyProductionVisual").firstChild.data = Math.floor(totalEnergyProduction()) + " mJ/s"
         }
@@ -214,9 +214,9 @@ function showBuildings() {
     let previousPurchased = false
     for (let building of gameData.buildings) {
         if (gameData.bulkBuy === "Max") {
-            document.getElementById(building.id).firstChild.data = "Buy " + calculateBuildingPrice(building)[1]  + building.name + " for " + calculateBuildingPrice(building)[0] + " currency"
+            document.getElementById(building.id).firstChild.data = "Buy " + format(calculateBuildingPrice(building)[1], "")  + building.name + " for " + format(calculateBuildingPrice(building)[0],"") + " currency"
         } else {
-            document.getElementById(building.id).firstChild.data = "Buy " + gameData.bulkBuy + building.name + " for " + calculateBuildingPrice(building) + " currency"
+            document.getElementById(building.id).firstChild.data = "Buy " + gameData.bulkBuy + building.name + " for " + format(calculateBuildingPrice(building), "") + " currency"
             }
         if (building.unlocked === false && previousPurchased ) {
             building.unlocked = true
