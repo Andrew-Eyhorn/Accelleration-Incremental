@@ -27,7 +27,10 @@ let gameData = {
     energyProduction: 0,
     mass: 2000000000,
     buildings: [ { id: "B0", name: "CR2032 Button Battery", unlocked : false, price: 50, amountOwned: 0, production: 1 },
-                 { id: "B1", name: "CR4250 Button Battery", unlocked : false, price: 500, amountOwned: 0, production: 10 }],
+                 { id: "B1", name: "CR4250 Button Battery", unlocked : false, price: 500, amountOwned: 0, production: 10 },
+                 { id: "B2", name: "AA Battery", unlocked : false, price: 5000, amountOwned: 0, production: 100 },
+                 { id: "B3", name: "A23 Battery", unlocked : false, price: 50000, amountOwned: 0, production: 600 },
+                ],
     unit: 1,
     lastTick: Date.now(),
     achievements: [{ id: "A0", name: "Auto-cellerate please?", tooltip: "Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate", unlocked: false, property: 'speed', value: 10, reward() { gameData.autobuyers.accelerate[0] = true } },
@@ -218,11 +221,11 @@ function showBuildings() {
         if (building.unlocked === false && previousPurchased ) {
             building.unlocked = true
             document.getElementById(building.id).style.display = "inline-block"
-            return
         }
         if (building.amountOwned > 0) {
             previousPurchased = true
         }
+        else previousPurchased = false
     }
 }
 function changeFormat() {
