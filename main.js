@@ -75,7 +75,7 @@ function increaseSpeed() {
         energyNeeded = Math.round(gameData.mass / 2000 * ((incrementAmount/1000) ** 2 + 2 * (incrementAmount/1000) * gameData.speed/1000))
         document.getElementById("increaseSpeed").firstChild.data = "for " + format(energyNeeded, "milijoules") + " energy"
         document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "milijoules") + " energy"
-        document.getElementById("speedVisual").firstChild.data = format(speed, "mm/s")
+        document.getElementById("speedVisual").firstChild.data = format(gameData.speed, "mm/s")
     }
 }
 function navigate(menu) {
@@ -143,6 +143,7 @@ function generateBuildings() {
         newBuilding.id = building.id
         newBuilding.textContent = "Buy a " + building.name + " for " + building.price + " currency"
         newBuilding.style.display = "none"
+        newBuilding.title = "asdkljiouhfdsaoipfuodsiafpujasd"
         document.getElementById("energyBuildings").append(newBuilding)
         tippy('#' + building.id, {
             content: "You have " + building.amountOwned + " " + building.name + " producing " + format(building.amountOwned*building.production,"mj/s"),
@@ -203,6 +204,8 @@ function buyBuilding(building) {
             document.getElementById("energyProductionVisual").firstChild.data = Math.floor(totalEnergyProduction()) + " mJ/s"
         }
     }
+    var instance = tippy(document.getElementById(building.id))
+    instance.setContent("You have " + building.amountOwned + " " + building.name + " producing " + building.amountOwned*building.production + "mj/s")
 }
 function showBuildings() {
     let previousPurchased = false
@@ -212,8 +215,6 @@ function showBuildings() {
         } else {
             document.getElementById(building.id).firstChild.data = "Buy " + gameData.bulkBuy + building.name + " for " + calculateBuildingPrice(building) + " currency"
             }
-        const instance = tippy(document.getElementById(building.id))
-        instance.setContent("You have " + building.amountOwned + " " + building.name + " producing " + building.amountOwned*building.production + "mj/s")
         if (building.unlocked === false && previousPurchased ) {
             building.unlocked = true
             document.getElementById(building.id).style.display = "inline-block"
