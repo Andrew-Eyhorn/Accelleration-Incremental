@@ -26,10 +26,10 @@ let gameData = {
     energy: 0,
     energyProduction: 0,
     mass: 2000000000,
-    buildings: [ { id: "B0", name: "CR2032 Button Battery", unlocked : false, price: 50, scaling: 1.2, amountOwned: 0, production: 1, multiplier: 1, },
-                 { id: "B1", name: "CR4250 Button Battery", unlocked : false, price: 500, scaling: 1.2, amountOwned: 0, production: 10, multiplier: 1, },
-                 { id: "B2", name: "AA Battery", unlocked : false, price: 5000, scaling: 1.2, amountOwned: 0, production: 100, multiplier: 1, },
-                 { id: "B3", name: "A23 Battery", unlocked : false, price: 50000, scaling: 1.2, amountOwned: 0, production: 600, multiplier: 1, },
+    buildings: [ { id: "B0", name: "CR2032 Button Battery", unlocked : false, price: 50, scaling: 1.1, amountOwned: 0, production: 1, multiplier: 1, },
+                 { id: "B1", name: "CR4250 Button Battery", unlocked : false, price: 500, scaling: 1.1, amountOwned: 0, production: 10, multiplier: 1, },
+                 { id: "B2", name: "AA Battery", unlocked : false, price: 5000, scaling: 1.1, amountOwned: 0, production: 100, multiplier: 1, },
+                 { id: "B3", name: "A23 Battery", unlocked : false, price: 50000, scaling: 1.1, amountOwned: 0, production: 600, multiplier: 1, },
                 ],
     upgrades: [  { id: "U0", name: "Rechargable batteries", tooltip: "Batteries produce 2x more energy", unlocked: false, reward() {increaseMultiplier(0, 3, 2)}}
                 ],
@@ -188,13 +188,13 @@ function switchBulkBuy(buyAmount) {
 }
 function calculateBuildingPrice(building) {
     if (gameData.bulkBuy === "Max") {
-        var maxAmount = Math.floor((Math.log(gameData.currency/(5*building.price)+1.2**building.amountOwned))/Math.log(1.2)-building.amountOwned)
+        var maxAmount = Math.floor((Math.log((gameData.currency*(building.scaling-1))/building.price+building.scaling**building.amountOwned))/Math.log(building.scaling)-building.amountOwned)
         if (maxAmount === 0) {
             return [0, 0]
         }
-        return [Math.ceil((building.price*(1.2**(maxAmount+building.amountOwned) - 1.2**building.amountOwned))/0.2), maxAmount]
+        return [Math.ceil((building.price*(building.scaling**(maxAmount+building.amountOwned) - building.scaling**building.amountOwned))/(building.scaling-1)), maxAmount]
     } else {
-        return Math.ceil((building.price*(1.2**(parseInt(gameData.bulkBuy) + parseInt(building.amountOwned)) - 1.2**building.amountOwned))/0.2)
+        return Math.ceil((building.price*(building.scaling**(parseInt(gameData.bulkBuy) + parseInt(building.amountOwned)) - building.scaling**building.amountOwned))/(building.scaling-1))
     }
 }
 function buyBuilding(building) {
