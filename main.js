@@ -26,16 +26,18 @@ let gameData = {
     energy: 0,
     energyProduction: 0,
     mass: 2000000000,
-    buildings: [ { id: "B0", name: "CR2032 Button Battery", unlocked : false, price: 50, amountOwned: 0, production: 1 },
-                 { id: "B1", name: "CR4250 Button Battery", unlocked : false, price: 500, amountOwned: 0, production: 10 },
-                 { id: "B2", name: "AA Battery", unlocked : false, price: 5000, amountOwned: 0, production: 100 },
-                 { id: "B3", name: "A23 Battery", unlocked : false, price: 50000, amountOwned: 0, production: 600 },
+    buildings: [ { id: "B0", name: "CR2032 Button Battery", unlocked : false, price: 50, scaling: 1.2, amountOwned: 0, production: 1, multiplier: 1, },
+                 { id: "B1", name: "CR4250 Button Battery", unlocked : false, price: 500, scaling: 1.2, amountOwned: 0, production: 10, multiplier: 1, },
+                 { id: "B2", name: "AA Battery", unlocked : false, price: 5000, scaling: 1.2, amountOwned: 0, production: 100, multiplier: 1, },
+                 { id: "B3", name: "A23 Battery", unlocked : false, price: 50000, scaling: 1.2, amountOwned: 0, production: 600, multiplier: 1, },
                 ],
-    unit: 1,
+    upgrades: [  { id: "U0", name: "Rechargable batteries", tooltip: "Batteries produce 2x more energy", unlocked: false, reward() {increaseMultiplier(0, 3, 2)}}
+                ],
     lastTick: Date.now(),
     achievements: [{ id: "A0", name: "Auto-cellerate please?", tooltip: "Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate", unlocked: false, property: 'speed', value: 10, reward() { gameData.autobuyers.accelerate[0] = true } },
                    { id: "A1", name: "Faster than a sloth", tooltip: 'Accelerate to 100 mm/s<br>Reward: You can accelerate by higher increments based on your highest speed', unlocked: false, property: 'speed', value: 100, reward() {} },
-                    ],
+                   { id: "A2", name: "Walking Pace", tooltip: 'Accelerate to 1000 mm/s<br>Reward: Unlock upgrades', unlocked: false, property: 'speed', value: 1000, reward() {document.getElementById("upgradesMenuButton").style.display = "inline-block"} },
+                ],
     settings: { tickSpeed: 100, format: standard.short },
     bulkBuy: 1,
     autobuyers: { accelerate: [false, false], }
@@ -60,10 +62,16 @@ function calculateOfflineProgress() {
 function totalEnergyProduction() {
     totalOutput = 0
     for (i in gameData.buildings) {
-        totalOutput += gameData.buildings[i].amountOwned * gameData.buildings[i].production
+        totalOutput += gameData.buildings[i].amountOwned * gameData.buildings[i].production * gameData.buildings[i].multiplier
     }
     return totalOutput
 }
+function increaseMultiplier(firstBuilding, lastBuilding, amount) {//first/last building is the range of buildings in gameData that will have their multiplier increase
+    for (i = firstBuilding; i++; i === lastBuilding) {
+        gameData.buildings[i].multiplier *= amount
+    }
+
+} 
 function giveCurrency() {
     gameData.currency += gameData.currencyPerClick
     document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
@@ -83,7 +91,7 @@ function increaseSpeed() {
 }
 function navigate(menu) {
     x = document.getElementsByClassName("menu")
-    if (menu === 2) { loadAchievementsMenu() }
+    if (menu === 3) { loadAchievementsMenu() }
     if (menu === 0) {loadSpeedMenu()}
     for (i = 0; i < x.length; i++) {
         x[i].style.display = "none"
@@ -99,7 +107,6 @@ function checkAchievements() {
             currentAchievement.reward()
             notification("Achievement Unlocked: " + currentAchievement.name)
         }
-
     }
 }
 function loadAchievementsMenu() {
@@ -281,12 +288,15 @@ document.addEventListener('input', function (event) {
 let mainGameLoop = null
 function gameCalcluations() {
     mainGameLoop = window.setInterval(function () {
+    // var start = Date.now()
         if (gameData.autobuyers.accelerate[0] === true) { increaseSpeed(); }
         if (document.getElementsByClassName("menu")[1].style.display === 'inline-block') { showBuildings(); }
         gameData.currency += gameData.speed / (1000 / gameData.settings.tickSpeed)
         gameData.energy += totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
         document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
         document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "milijoules") + " energy"
+        checkAchievements()
+        // console.log("mainGameLoop took: " + (Date.now()-start) + " ms")
     }, gameData.settings.tickSpeed)
 }
 function stopGameCalculations() {

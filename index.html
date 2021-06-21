@@ -19,8 +19,9 @@
     <div id="navigationButtons">
         <button onclick="navigate(0)">Speed</button>
         <button onclick="navigate(1)">Energy</button>
-        <button onclick="navigate(2)">Achievements</button>
-        <button onclick="navigate(3)">Options</button>
+        <button id = "upgradesMenuButton" onclick="navigate(2)">Upgrades</button>
+        <button onclick="navigate(3)">Achievements</button>
+        <button onclick="navigate(4)">Options</button>
     </div>
     <div id="speedMenu" class="menu">
         <button onclick="giveCurrency()">give currency</button>
@@ -38,6 +39,7 @@
         <button onclick="switchBulkBuy('buyMax')" class="bulkBuyButton" id="buyMax">Max</button>
         <div id="energyBuildings"></div>
     </div>
+    <div id = "upgradeMenu" class = "menu"></div>
     <div id="achievementsMenu" class="menu">
         <div id = "achievements"></div>
     </div>

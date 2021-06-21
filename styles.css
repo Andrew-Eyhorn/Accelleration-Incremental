@@ -31,3 +31,6 @@
     align-items: center;
     text-align: center;
 }
+#upgradesMenuButton {
+    display: none;
+}
