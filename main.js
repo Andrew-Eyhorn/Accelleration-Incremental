@@ -26,17 +26,20 @@ let gameData = {
     energy: 0,
     energyProduction: 0,
     mass: 2000000000,
-    buildings: [ { id: "B0", name: "CR2032 Button Battery", unlocked : false, price: 50, scaling: 1.1, amountOwned: 0, production: 1, multiplier: 1, },
-                 { id: "B1", name: "CR4250 Button Battery", unlocked : false, price: 500, scaling: 1.1, amountOwned: 0, production: 10, multiplier: 1, },
-                 { id: "B2", name: "AA Battery", unlocked : false, price: 5000, scaling: 1.1, amountOwned: 0, production: 100, multiplier: 1, },
-                 { id: "B3", name: "A23 Battery", unlocked : false, price: 50000, scaling: 1.1, amountOwned: 0, production: 600, multiplier: 1, },
+    buildings: [ { id: "B0", name: "CR2032 Button Battery", unlocked : false, price: 50, scaling: 1.2, amountOwned: 0, production: 1, multiplier: 1, },
+                 { id: "B1", name: "CR4250 Button Battery", unlocked : false, price: 500, scaling: 1.2, amountOwned: 0, production: 10, multiplier: 1, },
+                 { id: "B2", name: "AA Battery", unlocked : false, price: 5000, scaling: 1.2, amountOwned: 0, production: 100, multiplier: 1, },
+                 { id: "B3", name: "A23 Battery", unlocked : false, price: 50000, scaling: 1.2, amountOwned: 0, production: 600, multiplier: 1, },
                 ],
     upgrades: [  { id: "U0", name: "Rechargable batteries", tooltip: "Batteries produce 2x more energy", unlocked: false, reward() {increaseMultiplier(0, 3, 2)}}
                 ],
     lastTick: Date.now(),
+    achievementsUnlocked: 0,
     achievements: [{ id: "A0", name: "Auto-cellerate please?", tooltip: "Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate", unlocked: false, property: 'speed', value: 10, reward() { gameData.autobuyers.accelerate[0] = true } },
                    { id: "A1", name: "Faster than a sloth", tooltip: 'Accelerate to 100 mm/s<br>Reward: You can accelerate by higher increments based on your highest speed', unlocked: false, property: 'speed', value: 100, reward() {} },
-                   { id: "A2", name: "Walking Pace", tooltip: 'Accelerate to 1000 mm/s<br>Reward: Unlock upgrades', unlocked: false, property: 'speed', value: 1000, reward() {document.getElementById("upgradesMenuButton").style.display = "inline-block"} },
+                   { id: "A2", name: "Powered", tooltip: 'Produce 100 mj/s<br>Reward: Energy production multiplier based on number of achievements unlocked', unlocked: false, property: 'energyProduction', value: 100, reward() {} },
+                   { id: "A3", name: "Energised", tooltip: 'Produce 1000 mj/s<br>Reward: none :(', unlocked: false, property: 'energyProduction', value: 1000, reward() {} },
+                   { id: "A4", name: "Walking Pace", tooltip: 'Accelerate to 1000 mm/s<br>Reward: Unlock upgrades', unlocked: false, property: 'speed', value: 1000, reward() {document.getElementById("upgradesMenuButton").style.display = "inline-block"} },
                 ],
     settings: { tickSpeed: 100, format: standard.short },
     bulkBuy: 1,
@@ -60,10 +63,12 @@ function calculateOfflineProgress() {
     document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "milijoules") + " energy"
 }
 function totalEnergyProduction() {
-    totalOutput = 0
+    var totalOutput = 0
     for (i in gameData.buildings) {
         totalOutput += gameData.buildings[i].amountOwned * gameData.buildings[i].production * gameData.buildings[i].multiplier
     }
+    totalOutput *= achievementMultiplier()
+    gameData.energyProduction = totalOutput
     return totalOutput
 }
 function increaseMultiplier(firstBuilding, lastBuilding, amount) {//first/last building is the range of buildings in gameData that will have their multiplier increase
@@ -105,12 +110,16 @@ function checkAchievements() {
         if (gameData[currentAchievement.property] >= currentAchievement.value) {
             gameData.achievements[i].unlocked = true
             currentAchievement.reward()
+            gameData.achievementsUnlocked += 1
             notification("Achievement Unlocked: " + currentAchievement.name)
         }
     }
 }
 function loadAchievementsMenu() {
     checkAchievements()
+   if (gameData.achievements[2].unlocked) {
+    document.getElementById('achievementCountDisplay').innerText = "You have unlocked " + gameData.achievementsUnlocked + " achievements, boosting energy production by " + Math.round(achievementMultiplier()*100)/100 + "x"
+   } else document.getElementById('achievementCountDisplay').innerText = "You have unlocked " + gameData.achievementsUnlocked + " achievements"
     for (i in gameData.achievements) {
         if (gameData.achievements[i].unlocked === true) {
         document.getElementById(gameData.achievements[i].id).style.backgroundColor = "green"
@@ -251,6 +260,12 @@ function changeFormat() {
     }
     // gameData.settings.format = document.getElementById("formatSelect").value
 }
+function achievementMultiplier() {
+   if (gameData.achievements[2].unlocked) {
+    return 2**(gameData.achievementsUnlocked/5)
+   } else return 1
+    
+}
 async function notification(text) {
     const delay = ms => new Promise(res => setTimeout(res, ms));
     let op = 0.1;  
@@ -288,15 +303,13 @@ document.addEventListener('input', function (event) {
 let mainGameLoop = null
 function gameCalcluations() {
     mainGameLoop = window.setInterval(function () {
-    // var start = Date.now()
         if (gameData.autobuyers.accelerate[0] === true) { increaseSpeed(); }
         if (document.getElementsByClassName("menu")[1].style.display === 'inline-block') { showBuildings(); }
         gameData.currency += gameData.speed / (1000 / gameData.settings.tickSpeed)
-        gameData.energy += totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
+        gameData.energy +=  totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
         document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
         document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "milijoules") + " energy"
         checkAchievements()
-        // console.log("mainGameLoop took: " + (Date.now()-start) + " ms")
     }, gameData.settings.tickSpeed)
 }
 function stopGameCalculations() {
