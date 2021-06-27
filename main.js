@@ -31,8 +31,9 @@ let gameData = {
                  { id: "B2", name: "AA Battery", unlocked : false, price: 5000, scaling: 1.2, amountOwned: 0, production: 100, multiplier: 1, },
                  { id: "B3", name: "A23 Battery", unlocked : false, price: 50000, scaling: 1.2, amountOwned: 0, production: 600, multiplier: 1, },
                 ],
-    upgrades: [  { id: "U0", name: "Rechargable batteries", tooltip: "Batteries produce 2x more energy", unlocked: false, reward() {increaseMultiplier(0, 3, 2)}}
-                ],
+    buildingUpgrades: [  { id: "U0", name: "Rechargable Batteries", tooltip: "Batteries produce 2x more energy", buildingsNeeded: ["battery", 0, 3], unlocked: true, level: 0, requirement: 1, price: [100000, 100000], scaling: [5, 5, 25], reward() {increaseMultiplier(0, 3, 2)}},
+                         { id: "U1", name: "On Sale!", tooltip: "Reduce the cost scaling of batteries by 10%", buildingsNeeded: ["battery", 0, 3], unlocked: true, level: 0, requirement: 1, price:[1000000, 1000000], scaling: [10, 10, 100], reward() {reduceScaling(0, 3, 0.9)}},
+],
     lastTick: Date.now(),
     achievementsUnlocked: 0,
     achievements: [{ id: "A0", name: "Auto-cellerate please?", tooltip: "Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate", unlocked: false, property: 'speed', value: 10, reward() { gameData.autobuyers.accelerate[0] = true } },
@@ -72,11 +73,16 @@ function totalEnergyProduction() {
     return totalOutput
 }
 function increaseMultiplier(firstBuilding, lastBuilding, amount) {//first/last building is the range of buildings in gameData that will have their multiplier increase
-    for (i = firstBuilding; i++; i === lastBuilding) {
+    for (i = firstBuilding; i <= lastBuilding; i++) {
         gameData.buildings[i].multiplier *= amount
     }
-
 } 
+function reduceScaling(firstBuilding, lastBuilding, amount) {
+    for (i = firstBuilding; i <= lastBuilding; i++) {
+        gameData.buildings[i].scaling = (gameData.buildings[i].scaling-1)*100*amount/100+1
+    }
+}
+
 function giveCurrency() {
     gameData.currency += gameData.currencyPerClick
     document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
@@ -153,6 +159,37 @@ function generateAchievements() {
             content: achievement.tooltip,
             allowHTML: true
           })
+    }
+}
+function generateBuldingUpgrades() {
+    for (let upgrade of gameData.buildingUpgrades) {
+        let newUpgrade = document.createElement("rect")
+        newUpgrade.id = upgrade.id
+        newUpgrade.className = "upgrade"
+        newUpgrade.innerHTML = upgrade.name + " level " + upgrade.level + "</br> Need: " + upgrade.requirement + " of each " + upgrade.buildingsNeeded[0] + "</br> Cost: " + format(upgrade.price[0], "") + " currency and </br>" + format(upgrade.price[1], "mj") + " of energy"
+        newUpgrade.onclick = function() { buyUpgrade(upgrade);};
+        document.getElementById('upgrades').append(newUpgrade)
+        tippy('#' + upgrade.id, {
+            content: upgrade.tooltip,
+            allowHTML: true
+          })
+    }
+}
+function buyUpgrade(upgrade) {
+    for (i = upgrade.buildingsNeeded[1]; i <= upgrade.buildingsNeeded[2]; i++) {
+        if (!gameData.buildings[i].amountOwned >= upgrade.requirement) {return}
+    }
+    if (gameData.currency >= upgrade.price[0] && gameData.energy >= upgrade.price[1]) {
+        gameData.currency -= upgrade.price[0]
+        gameData.energy -= upgrade.price[1]
+        upgrade.level += 1
+        upgrade.requirement *= upgrade.scaling[0]
+        upgrade.price[0] *= upgrade.scaling[1]
+        upgrade.price[1] *= upgrade.scaling[2]
+        upgrade.reward()
+        document.getElementById(upgrade.id).innerHTML = upgrade.name + " level " + upgrade.level + "</br> Need: " + upgrade.requirement + " of each " + upgrade.buildingsNeeded[0] + "</br> Cost: " + format(upgrade.price[0], "") + " currency and </br>" + format(upgrade.price[1], "mj") + " of energy"
+        document.getElementById("currencyVisual").firstChild.data = format(gameData.currency, "") + " Currency"
+        document.getElementById("energyProductionVisual").firstChild.data = Math.floor(totalEnergyProduction()) + " mJ/s"
     }
 }
 function generateBuildings() {
@@ -327,6 +364,7 @@ slider.oninput = function () {
 }
 generateAchievements()
 generateBuildings()
+generateBuldingUpgrades()
 navigate(0)
 switchBulkBuy("buy1")
 gameCalcluations()

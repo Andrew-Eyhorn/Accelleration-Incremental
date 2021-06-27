@@ -34,3 +34,18 @@
 #upgradesMenuButton {
     display: none;
 }
+#upgradesMenu {
+    display: inline-flex;
+    flex-direction: row;
+}
+.upgrade {
+    width: 200px;
+    height: 100px;
+    border: 2px solid white;
+    background-color: grey;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
