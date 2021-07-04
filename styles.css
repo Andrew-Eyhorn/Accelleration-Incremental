@@ -17,8 +17,11 @@
 #energyBuildings {  
     display: grid
 }
-.buyingAmountButton {
-    opacity: 50%;
+#speedMenu {
+    display: inline-block
+}
+.autoAccellerateDisplay {
+    display: none
 }
 #popupNotification {
     position:absolute;

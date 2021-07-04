@@ -36,7 +36,7 @@ let gameData = {
 ],
     lastTick: Date.now(),
     achievementsUnlocked: 0,
-    achievements: [{ id: "A0", name: "Auto-cellerate please?", tooltip: "Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate", unlocked: false, property: 'speed', value: 10, reward() { gameData.autobuyers.accelerate[0] = true } },
+    achievements: [{ id: "A0", name: "Auto-cellerate please?", tooltip: "Accelerate to 10 mm/s<br>Reward: Automatically spend your energy to accelerate", unlocked: false, property: 'speed', value: 10, reward() { j = document.getElementsByClassName("autoAccellerateDisplay"); j[0].style.display = "inline-block"; j[1].style.display = "inline-block" } },
                    { id: "A1", name: "Faster than a sloth", tooltip: 'Accelerate to 100 mm/s<br>Reward: You can accelerate by higher increments based on your highest speed', unlocked: false, property: 'speed', value: 100, reward() {} },
                    { id: "A2", name: "Powered", tooltip: 'Produce 100 mj/s<br>Reward: Energy production multiplier based on number of achievements unlocked', unlocked: false, property: 'energyProduction', value: 100, reward() {} },
                    { id: "A3", name: "Energised", tooltip: 'Produce 1000 mj/s<br>Reward: none :(', unlocked: false, property: 'energyProduction', value: 1000, reward() {} },
@@ -44,7 +44,7 @@ let gameData = {
                 ],
     settings: { tickSpeed: 100, format: standard.short },
     bulkBuy: 1,
-    autobuyers: { accelerate: [false, false], }
+    autobuyers: { accelerate: false, }
 }
 
 
@@ -99,6 +99,11 @@ function increaseSpeed() {
         document.getElementById("energyVisual").firstChild.data = format(gameData.energy, "milijoules") + " energy"
         document.getElementById("speedVisual").firstChild.data = format(gameData.speed, "mm/s")
     }
+}
+function toggleAuto() {
+    if (gameData.autobuyers.accelerate) {
+        gameData.autobuyers.accelerate = false
+    } else gameData.autobuyers.accelerate = true
 }
 function navigate(menu) {
     x = document.getElementsByClassName("menu")
@@ -340,7 +345,7 @@ document.addEventListener('input', function (event) {
 let mainGameLoop = null
 function gameCalcluations() {
     mainGameLoop = window.setInterval(function () {
-        if (gameData.autobuyers.accelerate[0] === true) { increaseSpeed(); }
+        if (gameData.autobuyers.accelerate === true) { increaseSpeed(); }
         if (document.getElementsByClassName("menu")[1].style.display === 'inline-block') { showBuildings(); }
         gameData.currency += gameData.speed / (1000 / gameData.settings.tickSpeed)
         gameData.energy +=  totalEnergyProduction() / (1000 / gameData.settings.tickSpeed)
